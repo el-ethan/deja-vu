@@ -1,6 +1,9 @@
 const {Incident} = require('./models.js');
-const connection = require('./database.js')();
+const colors = require('colors');
+const connect = require('./database.js');
 const inquirer = require('inquirer');
+
+const connection = connect();
 
 async function promptToSearchIncidents() {
     const searchQuery = {
@@ -17,14 +20,15 @@ async function promptToSearchIncidents() {
     const foundIncidents = await found.exec();
     console.log(`${foundIncidents.length} incidents found:\n`);
     foundIncidents.forEach((incident) => {
-        console.log(`Issue: ${incident.problem}\nSolution: ${incident.solution}\n`);
+        console.log(`Issue: ${incident.problem.yellow}\n`);
+        console.log(`Solution: ${incident.solution.green}\n`);
     });
 }
 
 async function promptToReportIncident() {
     const questions = [
         {
-            type: 'input',
+            type: 'editor',
             name: 'problem',
             message: 'What is the issue you are seeing?'
         },
@@ -35,7 +39,6 @@ async function promptToReportIncident() {
         }
     ];
     const answers = await inquirer.prompt(questions);
-    const connection = connect();
     const incident = new Incident({problem: answers.problem, solution: answers.solution});
     await incident.save();
 }
