@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const {Incident} = require('./models.js');
 const colors = require('colors');
 const connect = require('./database.js');
