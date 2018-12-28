@@ -1,5 +1,5 @@
 const {Incident} = require('./models.js');
-const connection = require('./database.js').connect();
+const connection = require('./database.js')();
 const inquirer = require('inquirer');
 
 async function promptToSearchIncidents() {
@@ -15,7 +15,10 @@ async function promptToSearchIncidents() {
     const problemRegex = new RegExp(`.*${answers.searchQuery}.*`, caseInsensitiveFlag);
     const found = Incident.find({problem: problemRegex});
     const foundIncidents = await found.exec();
-    console.log(foundIncidents);
+    console.log(`${foundIncidents.length} incidents found:\n`);
+    foundIncidents.forEach((incident) => {
+        console.log(`Issue: ${incident.problem}\nSolution: ${incident.solution}\n`);
+    });
 }
 
 async function promptToReportIncident() {
