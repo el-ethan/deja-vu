@@ -1,7 +1,6 @@
 const {Incident} = require('./models.js');
-const connect = require('./database.js');
+const connection = require('./database.js').connect();
 const inquirer = require('inquirer');
-
 
 async function promptToSearchIncidents() {
     const searchQuery = {
@@ -11,12 +10,12 @@ async function promptToSearchIncidents() {
     };
 
     const answers = await inquirer.prompt([searchQuery]);
-    const connection = connect();
-    const problemRegex = new RegExp(`.*${answers.searchQuery}.*`, 'i');
+
+    const caseInsensitiveFlag = 'i';
+    const problemRegex = new RegExp(`.*${answers.searchQuery}.*`, caseInsensitiveFlag);
     const found = Incident.find({problem: problemRegex});
     const foundIncidents = await found.exec();
     console.log(foundIncidents);
-    connection.close();
 }
 
 async function promptToReportIncident() {
@@ -36,7 +35,6 @@ async function promptToReportIncident() {
     const connection = connect();
     const incident = new Incident({problem: answers.problem, solution: answers.solution});
     await incident.save();
-    connection.close();
 }
 
 async function promptForMode() {
@@ -50,10 +48,10 @@ async function promptForMode() {
     ];
     const answers = await inquirer.prompt(questions);
     if (answers.modeChoice.pop() === 'search') {
-        promptToSearchIncidents();
+        return promptToSearchIncidents();
     } else {
-        promptToReportIncident();
+        return promptToReportIncident();
     }
 }
 
-promptForMode();
+promptForMode().then(() => connection.close());
