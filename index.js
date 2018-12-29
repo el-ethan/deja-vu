@@ -7,6 +7,8 @@ const inquirer = require('inquirer');
 
 const connection = connect();
 
+main().then(() => connection.close());
+
 async function promptToSearchIncidents() {
     const searchQuery = {
         type: 'input',
@@ -20,7 +22,7 @@ async function promptToSearchIncidents() {
     const problemRegex = new RegExp(`.*${answers.searchQuery}.*`, caseInsensitiveFlag);
     const found = Incident.find({problem: problemRegex});
     const foundIncidents = await found.exec();
-    console.log(`${foundIncidents.length} incidents found:\n`);
+    console.log(`${foundIncidents.length} incident(s) found:\n`);
     foundIncidents.forEach((incident) => {
         console.log(`Issue: ${incident.problem.yellow}\n`);
         console.log(`Solution: ${incident.solution.green}\n`);
@@ -55,11 +57,14 @@ async function promptForMode() {
         }
     ];
     const answers = await inquirer.prompt(questions);
-    if (answers.modeChoice.pop() === 'search') {
+    return answers.modeChoice.pop();
+}
+
+async function main() {
+    const mode = await promptForMode();
+    if (mode === 'search') {
         return promptToSearchIncidents();
     } else {
         return promptToReportIncident();
     }
 }
-
-promptForMode().then(() => connection.close());
