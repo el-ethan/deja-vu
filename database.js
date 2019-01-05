@@ -1,7 +1,8 @@
-var mongoose = require('mongoose');
+const config = require('./config.json');
+const mongoose = require('mongoose');
 
 function connect() {
-    mongoose.connect('mongodb://localhost/dejavu', {useNewUrlParser: true});
+    mongoose.connect(config.connectionString, {useNewUrlParser: true});
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
     db.once('open', function() {

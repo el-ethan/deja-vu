@@ -9,6 +9,15 @@ const connection = connect();
 
 main().then(() => connection.close());
 
+async function main() {
+    const mode = await promptForMode();
+    if (mode === 'search') {
+        return promptToSearchIncidents();
+    } else {
+        return promptToReportIncident();
+    }
+}
+
 async function promptToSearchIncidents() {
     const searchQuery = {
         type: 'input',
@@ -58,13 +67,4 @@ async function promptForMode() {
     ];
     const answers = await inquirer.prompt(questions);
     return answers.modeChoice.pop();
-}
-
-async function main() {
-    const mode = await promptForMode();
-    if (mode === 'search') {
-        return promptToSearchIncidents();
-    } else {
-        return promptToReportIncident();
-    }
 }
