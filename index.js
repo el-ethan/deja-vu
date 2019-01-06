@@ -11,7 +11,7 @@ main().then(() => connection.close());
 
 async function main() {
     const mode = await promptForMode();
-    if (mode === 'search') {
+    if (mode === "search") {
         return promptToSearchIncidents();
     } else {
         return promptToReportIncident();
